@@ -1,3 +1,5 @@
+"use server"
+
 import { db }from '@/db';
 import { createClient } from '@vercel/postgres';
 import {  faqsTable } from '@/db/schema';

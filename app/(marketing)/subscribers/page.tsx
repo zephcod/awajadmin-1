@@ -30,7 +30,7 @@ const solution = await db.select().from(emailPreferences)
                 </TableRow>
             </TableHeader>
             {solution.map(sol=>(
-            <TableBody>
+            <TableBody key={sol.id}>
                 <TableRow>
                 <TableCell className="font-medium">{sol.id}</TableCell>
                 <TableCell className="text-right">{sol.email}</TableCell>
