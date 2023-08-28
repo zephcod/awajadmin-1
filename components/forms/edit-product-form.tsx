@@ -12,7 +12,7 @@ import { type z } from "zod"
 
 // import { getSubcategories } from "@/config/products"
 import { catchError, isArrayOfFile } from "@/lib/utils"
-import { productSchema } from "@/lib/validations/product"
+import { productIdSchema, productSchema } from "@/lib/validations/product"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -36,18 +36,16 @@ import { Textarea } from "@/components/ui/textarea"
 import { FileDialog } from "@/components/file-dialog"
 import { Icons } from "@/components/icons"
 import { Zoom } from "@/components/zoom-image"
-import { addProductAction, checkProductAction } from "@/app/_actions/solution"
+import { addProductAction, checkProductAction, updateProductAction } from "@/app/_actions/solution"
 import type { OurFileRouter } from "@/app/api/uploadthing/core"
 
-interface AddProductFormProps {
-  storeid: number
-}
 
+type Id = z.infer<typeof productIdSchema>
 type Inputs = z.infer<typeof productSchema>
 
 const { useUploadThing } = generateReactHelpers<OurFileRouter>()
 
-export function AddProductForm({ storeid }: AddProductFormProps) {
+export function AddProductForm( props:Inputs & Id ) {
   const [files, setFiles] = React.useState<FileWithPreview[] | null>(null)
 
   const [isPending, startTransition] = React.useTransition()
@@ -56,9 +54,6 @@ export function AddProductForm({ storeid }: AddProductFormProps) {
 
   const form = useForm<Inputs>({
     resolver: zodResolver(productSchema),
-    defaultValues: {
-      // category: "social_media",
-    },
   })
 
   const previews = form.watch("images") as FileWithPreview[] | null
@@ -70,7 +65,6 @@ export function AddProductForm({ storeid }: AddProductFormProps) {
         await checkProductAction({
           name: data.name,
         })
-
         const images = isArrayOfFile(data.images)
           ? await startUpload(data.images).then((res) => {
               const formattedImages = res?.map((image) => ({
@@ -81,14 +75,24 @@ export function AddProductForm({ storeid }: AddProductFormProps) {
               return formattedImages ?? null
             })
           : null
+        
+        if (!props.name) {
+            await addProductAction({
+              ...data,
+              images,
+            })
+            toast.success("Solution added successfully.")
+          }
+        else {
+            await updateProductAction({
+              ...data,
+              images,
+              id:props._id
+            }
+            )
+            toast.success("Solution updated successfully.")
+        }
 
-        await addProductAction({
-          ...data,
-          storeid,
-          images,
-        })
-
-        toast.success("Product added successfully.")
 
         form.reset()
         setFiles(null)
@@ -110,6 +114,7 @@ export function AddProductForm({ storeid }: AddProductFormProps) {
             <Input
               aria-invalid={!!form.formState.errors.name}
               placeholder="Type product name here."
+              defaultValue={props.name}
               {...form.register("name")}
             />
           </FormControl>
@@ -122,6 +127,7 @@ export function AddProductForm({ storeid }: AddProductFormProps) {
           <FormControl>
             <Textarea
               placeholder="Type product description here."
+              defaultValue={props.description}
               {...form.register("description")}
             />
           </FormControl>
@@ -205,6 +211,7 @@ export function AddProductForm({ storeid }: AddProductFormProps) {
             <FormControl>
               <Input
                 placeholder="Type product price here."
+                defaultValue={props.price}
                 {...form.register("price")}
               />
             </FormControl>
@@ -219,6 +226,7 @@ export function AddProductForm({ storeid }: AddProductFormProps) {
                 type="number"
                 inputMode="numeric"
                 placeholder="Type product inventory here."
+                defaultValue={props.inventory}
                 {...form.register("inventory", {
                   valueAsNumber: true,
                 })}
@@ -269,8 +277,8 @@ export function AddProductForm({ storeid }: AddProductFormProps) {
               aria-hidden="true"
             />
           )}
-          Add Product
-          <span className="sr-only">Add Product</span>
+          {!props.name ?('Add Solution'):('Update Solution')}
+          <span className="sr-only">Add Solution</span>
         </Button>
       </form>
     </Form>

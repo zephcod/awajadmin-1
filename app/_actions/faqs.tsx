@@ -1,27 +1,43 @@
 "use server"
 
 import { db }from '@/db';
-import { createClient } from '@vercel/postgres';
 import {  faqsTable } from '@/db/schema';
 import { revalidatePath } from "next/cache"
-import type { Faqs } from "@/types"
-import { faqSchema } from '@/lib/validations/faq';
+import { faqIdSchema, faqSchema, faqTagSchema } from '@/lib/validations/faq';
 import { type z } from "zod"
-import { drizzle } from "drizzle-orm/vercel-postgres"
-import * as schema from "@/db/schema"
+import { eq } from 'drizzle-orm';
 
-export async function getFaqs():Promise<Faqs[]> {
-    const users = await db.select().from(faqsTable)
-    return users;
+export async function getFaqs(){
+    const faqs = await db.select().from(faqsTable)
+    return faqs;
 }
 
-export async function addFaqAction(input: z.infer<typeof faqSchema>){
-    const client = createClient();
-    await client.connect();
-    
-    await drizzle(client, {schema: schema}).insert(faqsTable).values({
-        ...input,
+export async function getFaqSuggestion(){
+    const faqs = await db.select({suggest:faqsTable.tags}).from(faqsTable)
+    const sug = faqs[0].suggest
+    console.log(sug)
+    return sug
+}
+
+export async function addFaqAction(input: z.infer<typeof faqSchema & typeof faqTagSchema>){
+    console.log(input)
+    await db.insert(faqsTable).values({
+        ...input, tags:input.tags
       })
+    
+      revalidatePath('/')
+}
+
+export async function updateFaqAction(input: z.infer<typeof faqSchema & typeof faqTagSchema>, ids: z.infer<typeof faqIdSchema>){
+    await db.update(faqsTable).set({
+        ...input,
+      }).where(eq(faqsTable.id,ids._id))
+    
+      revalidatePath('/')
+}
+
+export async function deleteFaqAction(deleteid: number){
+    await db.delete(faqsTable).where(eq(faqsTable.id, deleteid)).returning();
     
       revalidatePath('/')
 }

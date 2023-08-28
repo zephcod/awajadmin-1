@@ -28,6 +28,10 @@ export const productSchema = z.object({
     .default(null),
 })
 
+export const productIdSchema = z.object({
+  _id: z.number(),
+})
+
 export const filterProductsSchema = z.object({
   query: z.string(),
 })

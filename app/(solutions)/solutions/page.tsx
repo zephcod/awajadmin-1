@@ -1,58 +1,35 @@
+import React from 'react'
 import { db }from '@/db';
-import {  solutions } from '@/db/schema';
-import {
-    Table,
-    TableBody,
-    TableCaption,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-  } from "@/components/ui/table"
-  
+import { solutions } from '@/db/schema';
+import { columns } from "@/components/solutions/columns"
+import { DataTable } from "@/components/solutions/data-table"
+import Link from 'next/link';
 import { buttonVariants } from '@/components/ui/button';
 
-import React from 'react'
-import Link from 'next/link';
 
-async function EditProd () {
-const solution = await db.select().from(solutions)
-//  const res = JSON.stringify(users);
-  return (
-<div className='pt-14 items-center text-center'>
-    <Table>
-        <TableCaption>A list of solutions.</TableCaption>
-            <TableHeader>
-                <TableRow>
-                <TableHead className="w-[100px]">Id</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead className="text-right">Price</TableHead>
-                <TableHead className="text-right">Action</TableHead>
-                </TableRow>
-            </TableHeader>
-            {solution.map(sol=>(
-            <TableBody>
-                <TableRow>
-                <TableCell className="font-medium">{sol.id}</TableCell>
-                <TableCell>{sol.name}</TableCell>
-                <TableCell className="text-right">{sol.price}</TableCell>
-                <TableCell className="text-right"><Link href={`/admin/edit/${sol.id}`}>
-                <div
-                  className={buttonVariants({
-                    variant:'outline',
-                    size: "default",
-                  })}
+async function Subscribers() {
+  const users = await db.select({id:solutions.id, name:solutions.name}).from(solutions)
+   return (
+   <div className="h-full flex-1 flex-col space-y-8 p-6 md:flex overflow-hidden">
+      <div className="flex items-center justify-between space-y-2">
+        <div>
+          <h2 className="text-2xl mb-4 font-bold tracking-tight">Awaj Solutions Hub</h2>
+          <Link
+                aria-label="Add FAQ"
+                href={`/solutions/add`}
+                className={buttonVariants({
+                  variant: "default",
+                  size: "lg",
+                  className: "h-8 rounded-md mb-8 mx-auto",
+                })}
                 >
-                  Edit
-                  <span className="sr-only">Edit</span>
-                </div>
-              </Link></TableCell>
-                </TableRow>
-            </TableBody>))}
-    </Table>
-</div>
-
-  )
+                Create New Solution
+          </Link> 
+        </div>
+      </div>
+      <DataTable data={users} columns={columns} />
+    </div>
+   )
 }
 
-export default EditProd
+export default Subscribers

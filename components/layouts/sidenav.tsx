@@ -6,6 +6,7 @@ import clsx from 'clsx';
 import { useState } from 'react';
 import { Icons } from '../icons';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { ThemeToggle } from './theme_toggle';
 
 export function GlobalNav() {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,7 +14,7 @@ export function GlobalNav() {
 
   return (
     <div className="fixed top-0 z-10 flex w-full flex-col border-b border-border bg-card lg:bottom-0 lg:z-auto lg:w-72 lg:border-b-0 lg:border-r lg:border-border">
-      <div className="flex h-14 items-center px-4 py-4 lg:h-auto">
+      <div className="flex h-14 items-center pl-4 pr-16 md:pr-4 py-4 lg:h-auto">
         <Link
             href="/"
             className="group flex w-full items-center gap-x-2.5"
@@ -23,6 +24,7 @@ export function GlobalNav() {
                 Awaj Admin
             </h3>
         </Link>
+        <ThemeToggle/>
       </div>
       <button
         type="button"

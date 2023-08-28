@@ -14,15 +14,15 @@ interface FaqCardProps extends React.HTMLAttributes<HTMLDivElement> {
 async function faqCard ({variant="default", isAddedToCart = false, onSwitch}:FaqCardProps)  {
   const faq = await getFaqs()
   return (
-    faq.slice(0,3).map((item) =>(
+    faq.map((item) =>(
       <div key={item.id} className='flex flex-row items-baseline justify-start gap-2'>
         <div className='flex flex-row items-baseline justify-start gap-1'>
-        <FaqButton/>
+        <FaqButton delid={item.id}/>
         <Link
               aria-label="Edit FAQ"
               href={`/faqs/${item.id}`}
               className={buttonVariants({
-                variant: "outline",
+                variant: "default",
                 size: "sm",
                 className: "h-8 w-full rounded-md",
               })}
@@ -33,7 +33,12 @@ async function faqCard ({variant="default", isAddedToCart = false, onSwitch}:Faq
         <Accordion key={item.id} type="single" collapsible className="w-full ">
             <AccordionItem value='Question 1'>
                 <AccordionTrigger className="text-sm capitalize">
-                    {item.question}
+                    <div className='flex flex-row items-baseline justify-start'>
+                      {item.question}
+                      {item.tags.map((lab) =>(
+                        <div className='mx-2 py-1 px-2 rounded-full ring-1' key={lab.value}>{lab.label}</div>
+                      ))}
+                    </div>
                 </AccordionTrigger>
                 <AccordionContent>
                     <div className="flex flex-col space-y-2">

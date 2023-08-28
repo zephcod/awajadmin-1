@@ -35,7 +35,7 @@ export const demos: { name: string; items: Item[] }[] = [
       },
       {
         name: 'Add New',
-        slug: 'add',
+        slug: 'solutions/add',
         description: '',
       },
       {
@@ -49,6 +49,11 @@ export const demos: { name: string; items: Item[] }[] = [
     name: 'Orders',
     items: [
       {
+        name: 'Summary',
+        slug: 'summary',
+        description: '',
+      },
+      {
         name: 'Orders List',
         slug: 'orders',
         description: '',
@@ -57,16 +62,6 @@ export const demos: { name: string; items: Item[] }[] = [
         name: 'Subscriptions',
         slug: 'subscriptions',
         description: '',
-      },
-      {
-        name: 'Custom Orders',
-        slug: 'custom',
-        description: '',
-      },
-      {
-        name: 'Incremental Static Regeneration',
-        slug: 'isr',
-        description: 'Get the best of both worlds between static & dynamic',
       },
     ],
   },
@@ -99,8 +94,18 @@ export const demos: { name: string; items: Item[] }[] = [
         description: '',
       },
       {
-        name: 'Leads',
-        slug: 'leads',
+        name: 'Funnel flow',
+        slug: 'flow',
+        description: '',
+      },
+      {
+        name: 'E-mails',
+        slug: 'email',
+        description: '',
+      },
+      {
+        name: 'SMS',
+        slug: 'sms',
         description: '',
       },
     ],

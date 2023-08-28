@@ -101,5 +101,9 @@ export interface Faqs {
   id: number
   question: string
   answer: string
-  tags: [] | null
+  tags: object | null
+}
+
+export interface Tagfaqs {
+  suggest: object | null
 }

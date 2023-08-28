@@ -1,3 +1,4 @@
+import { FaqTag } from "@/lib/validations/faq";
 import type { CartItem, CheckoutItem, StoredFile } from "@/types"
 import { relations, type InferModel } from "drizzle-orm"
 import { pgTable, serial, boolean, timestamp, text, integer, decimal, varchar, uniqueIndex, json, pgEnum } from 'drizzle-orm/pg-core';
@@ -65,12 +66,13 @@ export const emailPreferences = pgTable("email_preferences", {
 
 export type EmailPreference = InferModel<typeof emailPreferences>
 
-
+export const tagEnum = pgEnum('tag', ['pricing', 'solutions', 'company', 'order']);
 export const faqsTable = pgTable( 'faqs', {
     id: serial('id').primaryKey(),
     question: varchar('question', { length: 191 }).notNull(),
-    answer: varchar('answer', { length: 191 }).notNull(),
-    tags: json("tags").$type<[]>().default([]),
+    answer: varchar('answer', { length: 512 }).notNull(),
+    tags: json("tags").$type<FaqTag>().default([{ value: "", label: "" }]).notNull(),
+    // tag: tagEnum('tag'),
     createdAt: timestamp('createdat').defaultNow().notNull(),
   })
 

@@ -138,7 +138,6 @@ export async function checkProductAction(input: { name: string; id?: number }) {
 
 export async function addProductAction(
   input: z.infer<typeof productSchema> & {
-    storeid: number
     images: StoredFile[] | null
   }
 ) {
@@ -152,22 +151,21 @@ export async function addProductAction(
 
   await db.insert(solutions).values({
     ...input,
-    storeid: input.storeid,
     images: input.images,
+    storeid: 1
   })
 
-  revalidatePath(`/dashboard/stores/${input.storeid}/products.`)
+  revalidatePath(`/solutions/[editid]`)
 }
 
 export async function updateProductAction(
   input: z.infer<typeof productSchema> & {
-    storeid: number
     id: number
     images: StoredFile[] | null
   }
 ) {
   const product = await db.query.solutions.findFirst({
-    where: and(eq(solutions.id, input.id), eq(solutions.storeid, input.storeid)),
+    where: eq(solutions.id, input.id)
   })
 
   if (!product) {
@@ -176,20 +174,14 @@ export async function updateProductAction(
 
   await db.update(solutions).set(input).where(eq(solutions.id, input.id))
 
-  revalidatePath(`/dashboard/stores/${input.storeid}/products/${input.id}`)
+  revalidatePath(`/solutions/[editid]`)
 }
 
-export async function deleteProductAction(
-  input: z.infer<typeof getProductSchema>
-) {
-  and(eq(solutions.id, input.id), eq(solutions.storeid, input.storeid)),
-    await db
-      .delete(solutions)
-      .where(
-        and(eq(solutions.id, input.id), eq(solutions.storeid, input.storeid))
-      )
+export async function deleteProductAction( deleteid:number) {
+  
+  await db.delete(solutions).where(eq(solutions.id, deleteid)).returning();
 
-  revalidatePath(`/dashboard/stores/${input.storeid}/products`)
+  revalidatePath(`/solutions/${deleteid}`)
 }
 
 export async function getNextProductIdAction(
